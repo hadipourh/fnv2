@@ -1,2 +1,2 @@
 # fnv2
-A sage code for finding collision for the FNV2 hash function
+A sage code for finding collisions of the FNV2 hash function
