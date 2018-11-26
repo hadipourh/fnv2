@@ -1,0 +1,87 @@
+% IACR Transactions CLASS DOCUMENTATION
+% Written by Gaetan Leurent gaetan.leurent@inria.fr (2016-2018)
+%
+% To the extent possible under law, the author(s) have dedicated all
+% copyright and related and neighboring rights to this software to the
+% public domain worldwide. This software is distributed without any
+% warranty.
+%
+% You should have received a copy of the CC0 Public Domain Dedication
+% along with this software. If not, see
+% <http://creativecommons.org/publicdomain/zero/1.0/>.
+
+%%% script AUTHOR: Ga{\"{e}}tan Leurent, Friedrich Wiemer%%%
+%%% script TITLE: {IACR} Transactions class documentation%%%
+\documentclass{iacrtrans}
+\usepackage[utf8]{inputenc}
+\author{Hosein Hadipour\inst{1}}
+\institute{University of Tehran, Iran, \email{hosein.hadipour@protonmail.com}}
+\title[\texttt{iacrtans} class documentation]{Some Collisions for the \texttt{FNV2}}
+\subtitle{Yet another application of \texttt{LLL}}
+
+\begin{document}
+
+\maketitle
+
+% use optional argument because the \LaTeX command breaks the PDF keywords
+\keywords[\publname, ToSC, TCHES, LaTeX]{LLL algorithm, \texttt{FNV1-a}, \texttt{FNV2}, \texttt{SageMath}}
+
+\begin{abstract}
+ In this document we discuss about the solution of the problem 4 of the NSUCRYPTO 2018 competition. This problem is about a plain hash function called \texttt{FNV2}, which is derived from a real non-cryptographic hash function \texttt{FNV-1a}.
+\end{abstract}
+
+%\tableofcontents{}
+
+\section*{Introduction}
+In this document we want to find some collisions for a plain non-cryptographic hash function called \texttt{FNV2}. The \texttt{FNV2} is a simplified version of the \texttt{FNV1-a}  which uses modular addition instead of the \texttt{XOR} operation.
+
+
+\section{\texttt{FNV2} hash function}
+The \texttt{FNV2} hash function is derived from the hash function \texttt{FNV-1a}. \texttt{FNV2} processes a message $x$ composed of bytes $x_{1}, x_{2}, \ldots , x_{n}\in \{0, 1, \ldots, 255\}$ in the following way:
+\begin{itemize}
+\item 
+$h\gets h_{0}$
+\item 
+for $i = 1, 2, \ldots, n:  \ h\gets (h + x_{i})g \mod 2^{128}$;
+\item 
+return h. 
+\end{itemize}
+Here $h_{0} = 144066263297769815596495629667062367629$, and $g = 2^{88} + 315$.
+
+We want to find some collisions for the \texttt{FNV2}, that is, two different messages $x$ and $x'$ such that $\texttt{FNV2}(x) = \texttt{FNV2}(x')$. This is actually the problem number 4 of the second round of the NSUCRYPTO-2017 olympiad. 
+
+
+\section{From the hash collision problem to the LLL algorithm}
+Firstly, it is clear taht
+\begin{equation*}
+\texttt{FNV2}(x_{1}, x_{2}, \ldots, x_{n}) = (h_{0}g^{n} + x_{1}g^{n} + x_{2}g^{n-1} + \ldots + x_{n}g) \mod 2^{128}.
+\end{equation*}
+Next, it is sufficient to solve the equation
+\begin{equation}
+\label{collision_equation}
+z_{1}g^{n - 1} + z_{2}g^{n - 2} + \ldots + z_{n}g^{0} \equiv 0 \mod 2^{128}
+\end{equation}
+in $z_{1}, z_{2}, \ldots, z_{n}\in \{-255,\ldots, 255\}$ not equal to zero  simultaneously. Indeed, $z_{i} = x_{i} - y_{i}$ for some $x_{i}, y_{i}\in \{0, \ldots, 2555\}$, and 
+\begin{equation*}
+\texttt{FNV2}(x_{1}, x_{2}, \ldots, x_{n}) - \texttt{FNV2}(y_{1}, y_{2}, \ldots, y_{n}) = g(z_{1}g^{n-1} + z_{2}g^{n-2} + \ldots + z_{n}g^{0}) \equiv 0 \mod 2^{128}. 
+\end{equation*}
+Since $\gcd(g, 2^{128}) = 1$, we can multiply two sides of the above equivalence by $g^{-1}$ and derive the \ref{collision_equation}. 
+
+Therefore the purpose is to construct a polynomial such that g is its root. Note that this is not a natural integer relation problem, since the addition in the above equations is modular addition. 
+
+Let us define integer vectors $e^{0}, \ldots, e^{n}$ of length $n + 1$ in the following way:
+
+\begin{align*}
+&
+e^{0} = (\underbrace{0, \ldots, 0}_{n}, t.2^{128}), \text{where $t$ is a small integer},\\
+&e^{i} = (\underbrace{0, \ldots, 0}_{i-1}, 1, \underbrace{0, \ldots, 0}_{n-i}, g^{n - i} \mod 2^{128}), \text{where} i \in \{1, \ldots, n\}.
+\end{align*}
+Let us add $z_{0}$ to $z_{1}, \ldots, z_{n}$ and consider the linear combination
+\begin{equation*}
+l_{z} = z_{0}e^{0} + \ldots + z_{n}e^{n} = (z_{1}, \ldots, z_{n}, z_{0}.t.2^{128} + z_{1}.g^{n-1} + z_{2}.g^{n-2} + \ldots + z_{n}.g^{0}).
+\end{equation*}
+To solve the problem it is sufficient to find a liner combination $l_{z}$ with $z_{1}, \ldots, z_{n}\in \{-255, \ldots, 255\}$ and zero last coordinate. This can be done using \texttt{LLL} algorithm. It is a lattice reduction algorithm that can find a short nearly orthogonal basis $\langle e^{0}, \ldots, e^{n} \rangle$. Obtaining such an \texttt{LLL}-reduced basis, we check if it contains a vector $l_{z}$ with desired properties\cite{gorodilova2018problems}.
+
+\bibliography{references}{}
+\bibliographystyle{plain}
+\end{document}
