@@ -16,7 +16,8 @@
 \usepackage[utf8]{inputenc}
 \author{Hosein Hadipour\inst{1}}
 \institute{University of Tehran, Iran, \email{hosein.hadipour@protonmail.com}}
-\title[\texttt{iacrtans} class documentation]{Some Collisions for the \texttt{FNV2}}
+%\title[\texttt{iacrtans} class documentation]{Some Collisions for the \texttt{FNV2}}
+\title[Hosein Hadipour NSUCRYPTO-2818]{Some Collisions for the \texttt{FNV2}}
 \subtitle{Yet another application of \texttt{LLL}}
 
 \begin{document}
@@ -80,7 +81,7 @@ Let us add $z_{0}$ to $z_{1}, \ldots, z_{n}$ and consider the linear combination
 \begin{equation*}
 l_{z} = z_{0}e^{0} + \ldots + z_{n}e^{n} = (z_{1}, \ldots, z_{n}, z_{0}.t.2^{128} + z_{1}.g^{n-1} + z_{2}.g^{n-2} + \ldots + z_{n}.g^{0}).
 \end{equation*}
-To solve the problem it is sufficient to find a liner combination $l_{z}$ with $z_{1}, \ldots, z_{n}\in \{-255, \ldots, 255\}$ and zero last coordinate. This can be done using \texttt{LLL} algorithm. It is a lattice reduction algorithm that can find a short nearly orthogonal basis $\langle e^{0}, \ldots, e^{n} \rangle$. Obtaining such an \texttt{LLL}-reduced basis, we check if it contains a vector $l_{z}$ with desired properties\cite{gorodilova2018problems}.
+To solve the problem it is sufficient to find a liner combination $l_{z}$ with $z_{1}, \ldots, z_{n}\in \{-255, \ldots, 255\}$ and zero last coordinate. This can be done using \texttt{LLL} algorithm. It is a lattice reduction algorithm that can find a short nearly orthogonal basis $\langle e^{0}, \ldots, e^{n} \rangle$. Obtaining such an \texttt{LLL}-reduced basis, we check if it contains a vector $l_{z}$ with desired properties\cite{gorodilova2018problems}. A \texttt{SageMath} \cite{sagemath} code which in the above solution has been implemented can be found here: \url{https://github.com/hadipourh/fnv2}.
 
 \bibliography{references}{}
 \bibliographystyle{plain}
